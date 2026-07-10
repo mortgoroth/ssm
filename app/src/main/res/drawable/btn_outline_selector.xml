@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://android.com">
+    <!-- Состояние: Кнопка ЗАБЛОКИРОВАНА (нет галочек) -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp"/>
+            <solid android:color="@android:color/transparent"/>
+            <stroke android:width="2dp" android:color="#44FFFFFF"/> <!-- Блёклая рамка -->
+        </shape>
+    </item>
+    <!-- Состояние: Кнопка АКТИВНА (обычный вид) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp"/>
+            <solid android:color="@android:color/transparent"/>
+            <stroke android:width="2dp" android:color="?android:attr/textColorPrimary"/> <!-- Яркая рамка под тему -->
+        </shape>
+    </item>
+</selector>

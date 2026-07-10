@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutDebugContainer"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:layout_marginStart="8dp"
+    android:visibility="gone">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="K-Line Hex Monitor (Raw Rx Data):"
+        android:textColor="#BF360C"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="2dp"/>
+
+    <ScrollView
+        android:id="@+id/scrollDebug"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1E1E1E"
+        android:padding="6dp">
+        <TextView
+            android:id="@+id/txtDebugLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="[Ожидание запуска...]"
+            android:textColor="#00FF00"
+            android:textSize="12sp"
+            android:fontFamily="monospace" />
+    </ScrollView>
+</LinearLayout>

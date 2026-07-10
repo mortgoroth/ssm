@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://android.com"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Горизонтальный контейнер деления экрана пополам -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- 📊 1. ТАБЛИЦА ДАТЧИКОВ -->
+        <include layout="@layout/layout_sensor_table" />
+
+        <!-- 📈 2. ГРАФИКИ ДАТЧИКОВ -->
+        <include layout="@layout/layout_sensor_graph" />
+        <!-- 📈 3. Компактный режим -->
+        <include layout="@layout/layout_sensor_compact" />
+        <!-- 🖥️ 4. ПАНЕЛЬ HEX-ДЕБАГА -->
+        <include layout="@layout/layout_debug_monitor" />
+
+    </LinearLayout>
+
+    <!-- 🛠️ ПОЛНОСТЬЮ АВТОНОМНЫЙ НИЖНИЙ БЛОК УПРАВЛЕНИЯ ДАТЧИКАМИ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
+
+        <!-- Переключатель Debug mode -->
+        <ToggleButton
+            android:id="@+id/btnDebugMode"
+            android:layout_width="120dp"
+            android:layout_height="45dp"
+            android:textOn="RAW: ON"
+            android:textOff="RAW"
+            android:checked="false"
+            android:background="@drawable/btn_raw_outline_selector"
+            app:backgroundTint="@android:color/transparent"
+            android:textColor="@color/btn_raw_text_selector"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnToggleViewMode"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="View: Table"
+            android:background="@drawable/btn_outline_selector"
+            android:textColor="@color/btn_text_selector"
+            android:layout_marginEnd="6dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+
+        <!-- Кнопка Start -->
+        <Button
+            android:id="@+id/btnStartStop"
+            android:layout_width="120dp"
+            android:layout_height="45dp"
+            android:text="Start"
+            android:background="@drawable/btn_outline_selector"
+            android:textColor="@color/btn_text_selector" />
+    </LinearLayout>
+</LinearLayout>

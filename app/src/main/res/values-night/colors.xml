@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="table_header_bg">#252528</color>     <!-- Темно-графитовая шапка -->
+    <color name="table_header_text">#FFFFFF</color>   <!-- Белый текст шапки -->
+    <color name="table_content_bg">#121212</color>    <!-- Глубокий черный фон списка -->
+
+    <color name="main_title_text">#6A93E6</color>     <!-- Синий текст заголовка -->
+    <color name="rom_id_text">#F25DF2</color>         <!-- текст ROM-ID -->
+</resources>

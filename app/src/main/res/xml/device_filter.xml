@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Чип FTDI (Самый частый в оригинальных VAG-COM кабелях, Принудительный перехват приоритета у TPMS) -->
+    <usb-device vendor-id="1027" product-id="24577" manufacturer-name="FTDI" product-name="FT232R USB UART" />
+    <!-- Чип CH340 / CH341 (Часто встречается в недорогих китайских шнурках) -->
+    <usb-device vendor-id="6790" product-id="29987" />
+    <!-- Чип PL2303 -->
+    <usb-device vendor-id="1659" product-id="8963" />
+    <!-- Чип CP210x -->
+    <usb-device vendor-id="4292" product-id="60000" />
+</resources>

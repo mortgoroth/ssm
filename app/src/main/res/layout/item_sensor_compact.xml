@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_sensor_card"
+    android:layout_margin="4dp"
+    android:padding="12dp">
+
+    <!-- Имя датчика: подстраивается под цвет текста темы (светлый/тёмный) -->
+    <TextView
+        android:id="@+id/lblCompactTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Coolant Temp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+
+    <!-- Крупное текущее значение: всегда контрастно основному тексту -->
+    <TextView
+        android:id="@+id/lblCompactValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="95.0 °C"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

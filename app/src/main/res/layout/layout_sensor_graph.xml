@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutGraphContainer"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1.5"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:visibility="gone">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Live Waveform Graphs (Осциллограф):"
+        android:textColor="#0F377E"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="6dp" />
+
+    <!-- 🟢 ИСПРАВЛЕНО: Вертикальный контейнер. В него мы будем складывать горизонтальные ряды плашек -->
+    <LinearLayout
+        android:id="@+id/layoutLegendContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="4dp" />
+
+    <com.example.freessm.SsmGraphView
+        android:id="@+id/ssmGraphView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="6dp" />
+
+</LinearLayout>

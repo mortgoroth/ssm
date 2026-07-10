@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/lblConsoleHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="System Terminal:"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp" />
+
+    <!-- scrollContainer забирает всё свободное место -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="?android:attr/colorBackground"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/txtConsole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Нажмите Test Connect для инициализации K-Line кабеля..."
+            android:background="?android:attr/colorBackground"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp"
+            android:fontFamily="monospace" />
+    </ScrollView>
+
+    <!-- 🛠️ ВСПЛЫВАЮЩАЯ КНОПКА СБРОСА ОШИБОК (Изначально скрыта!) -->
+    <LinearLayout
+        android:id="@+id/layoutClearContainer"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="6dp"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="160dp"
+            android:layout_height="45dp"
+            android:text="Clear Codes"
+            android:backgroundTint="#D32F2F" />
+    </LinearLayout>
+</LinearLayout>

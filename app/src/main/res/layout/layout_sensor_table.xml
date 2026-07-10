@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutTableContainer"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1.5"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/table_header_bg"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+        <TextView android:layout_width="40dp" android:layout_height="wrap_content" android:text="Sel" android:textStyle="bold" android:textColor="@color/table_header_text"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.8" android:text="Title:" android:textStyle="bold" android:textColor="@color/table_header_text"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.8" android:text="Min" android:textStyle="bold" android:textColor="@color/table_header_text" android:gravity="center"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.8" android:text="Current" android:textStyle="bold" android:textColor="@color/table_header_text" android:gravity="center"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.8" android:text="Max" android:textStyle="bold" android:textColor="@color/table_header_text" android:gravity="center"/>
+        <TextView android:layout_width="50dp" android:layout_height="wrap_content" android:text="Unit" android:textStyle="bold" android:textColor="@color/table_header_text" android:gravity="end"/>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSensors"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="?android:attr/textColorPrimary"
+        android:background="@color/table_content_bg" />
+</LinearLayout>

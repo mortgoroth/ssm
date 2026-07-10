@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="?android:attr/colorBackground">
+
+    <!-- 1. ПОДКЛЮЧАЕМ ЛЕВУЮ ПАНЕЛЬ УПРАВЛЕНИЯ -->
+    <include layout="@layout/layout_left_panel" />
+
+    <!-- 2. ПОДКЛЮЧАЕМ ПРАВОЕ ОКНО С ТАБЛИЦЕЙ И ОШИБКАМИ -->
+    <include
+        layout="@layout/layout_right_panel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+</LinearLayout>

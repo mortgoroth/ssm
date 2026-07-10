@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?android:attr/windowBackground">
+
+    <TextView
+        android:id="@+id/lblEcuHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Engine Control Unit"
+        android:gravity="center"
+        android:textColor="@color/main_title_text"
+        android:background="#E0E0E0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/lblEngineType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Engine Type: Checking..."
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/lblRomId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ROM-ID:  Ожидание..."
+        android:textColor="@color/rom_id_text"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🟢 ПЕРЕНЕСЕНО СЮДА: Информация Measuring Blocks из оригинала -->
+    <TextView
+        android:id="@+id/lblMeasuringBlocksHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Measuring Blocks:\n  Data: 00  Switches: 00"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="15dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#A0A0A0"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Кнопка-индикатор: изначально нейтральная серая -->
+    <Button
+        android:id="@+id/btnTestConnect"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Test Connect"
+        android:backgroundTint="#757575" />
+
+    <!-- Остальные кнопки заблокированы до успешного коннекта -->
+    <Button
+        android:id="@+id/btnCodes"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Diagnostic Codes"
+        android:layout_marginTop="5dp"
+        android:enabled="false" />
+
+    <Button
+        android:id="@+id/btnData"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Measuring Blocks"
+        android:layout_marginTop="5dp"
+        android:enabled="false" />
+
+    <!-- Кнопка всегда доступна, без android:enabled="false" -->
+    <Button
+        android:id="@+id/btnGlobalLogs"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Logs"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#2196F3" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="Exit Control Unit"
+        android:textColor="@color/white"
+        android:backgroundTint="#D32F2F" />
+</LinearLayout>

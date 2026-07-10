@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- СЛАЙД 0: ЭКРАН ОШИБОК (Нижних кнопок тут больше НЕТ!) -->
+        <include layout="@layout/layout_diagnostic_codes" />
+        <!-- СЛАЙД 1: ЭКРАН ДАТЧИКОВ (Кнопки живут строго ТУТ!)    -->
+        <include layout="@layout/layout_measuring_blocks" />
+        <!-- СЛАЙД 2: ЭКРАН ГЛОБАЛЬНЫХ СИСТЕМНЫХ ЛОГОВ -->
+        <include layout="@layout/layout_system_logs" />
+    </ViewFlipper>
+</LinearLayout>

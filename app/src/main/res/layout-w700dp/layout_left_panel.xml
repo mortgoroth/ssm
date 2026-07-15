@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://android.com"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?android:attr/windowBackground">
+
+    <!-- 🟢 КРАСИВЫЙ МОНОЛИТНЫЙ ИНФОБЛОК С АППАРАТНЫМ СКРУГЛЕНИЕМ УГЛОВ -->
+    <LinearLayout
+        android:id="@+id/ecuInfoBlock"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@drawable/shape_rounded_container"
+        android:clipToOutline="true"
+        android:padding="14dp"
+        android:layout_marginBottom="10dp">
+
+        <!-- Стилизованный заголовок приложения -->
+        <TextView
+            android:id="@+id/lblEcuHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="FreeSSM ECU"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Тонкая разделительная линия внутри инфоблока -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#42A5F5"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Паспортные данные ЭБУ (Белый контрастный текст на темно-синем фоне) -->
+        <TextView
+            android:id="@+id/lblEngineType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Engine Type: ---"
+            android:textColor="#E3F2FD"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/lblRomId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ROM-ID: ---"
+            android:textColor="#FFCDD2"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/lblMeasuringBlocksHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Measuring Blocks:\n  Data: 00  Switches: 00"
+            android:textColor="#E3F2FD"
+            android:textSize="11sp"
+            android:lineSpacingExtra="2dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/shape_rounded_container"
+        android:clipToOutline="true">
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleButtonGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:checkedButton="@id/btnGlobalLogs">
+            <!-- 1️⃣ TEST CONNECT -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTestConnect"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="Test Connect"
+                android:textSize="13sp"
+                android:stateListAnimator="@null"
+                android:backgroundTint="#2196F3"
+                android:textColor="#FFFFFF"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="0dp" />
+
+            <!-- 2️⃣ DIAGNOSTIC CODES -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCodes"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="Diagnostic Codes"
+                android:textSize="13sp"
+                android:enabled="false"
+                android:stateListAnimator="@null"
+                android:backgroundTint="#B0BEC5"
+                android:textColor="#FFFFFF"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="0dp" />
+
+            <!-- 3️⃣ MEASURING BLOCKS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnData"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="Measuring Blocks"
+                android:textSize="13sp"
+                android:enabled="false"
+                android:stateListAnimator="@null"
+                android:backgroundTint="#B0BEC5"
+                android:textColor="#FFFFFF"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="0dp" />
+
+            <!-- 4️⃣ LOGS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGlobalLogs"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="Logs"
+                android:textSize="13sp"
+                android:stateListAnimator="@null"
+                android:backgroundTint="#2196F3"
+                android:textColor="#FFFFFF"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExit"
+                style="@style/Widget.MaterialComponents.Button"
+                android:textColor="@color/white"
+                android:backgroundTint="#D32F2F"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="Exit Control Unit"
+                android:textSize="13sp"
+                android:stateListAnimator="@null"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="0dp" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    </LinearLayout>
+
+</LinearLayout>

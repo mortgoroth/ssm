@@ -2,17 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:background="?android:attr/colorBackground">
 
-    <!-- 1. ПОДКЛЮЧАЕМ ЛЕВУЮ ПАНЕЛЬ УПРАВЛЕНИЯ -->
-    <include layout="@layout/layout_left_panel" />
+    <!-- 1. ЛЕВАЯ ПАНЕЛЬ: Теперь она встает НАВЕРХУ.
+         Мы убираем жесткую ширину 240dp, делаем её match_parent,
+         а высоту ограничиваем wrap_content, чтобы она не сожрала весь экран -->
+    <include
+        layout="@layout/layout_left_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <!-- 2. ПОДКЛЮЧАЕМ ПРАВОЕ ОКНО С ТАБЛИЦЕЙ И ОШИБКАМИ -->
+    <!-- Горизонтальная разделительная черта между верхней и нижней панелью -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#B0BEC5"/>
+
+    <!-- 2. ПРАВАЯ ПАНЕЛЬ С ТАБЛИЦЕЙ И ОШИБКАМИ: Встает СНИЗУ.
+         За счет layout_weight="1" она автоматически заберет себе
+         всё оставшееся свободное место до самого низа экрана магнитолы -->
     <include
         layout="@layout/layout_right_panel"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1" />
 
 </LinearLayout>

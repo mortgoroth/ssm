@@ -15,22 +15,49 @@
         android:layout_marginBottom="4dp" />
 
     <!-- scrollContainer забирает всё свободное место -->
+    <!-- ВЕРХНЯЯ ЧАСТЬ: Чистый результирующий паспорт (Всегда виден сверху) -->
+    <TextView
+        android:id="@+id/txtConsole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Нажмите Test Connect для инициализации K-Line кабеля..."
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="13sp"
+        android:fontFamily="monospace"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:padding="4dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#A0A0A0"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сырой RX/TX лог обмена К-линии:"
+        android:textSize="11sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="4dp" />
+
+    <!-- НИЖНЯЯ ЧАСТЬ: Изолированное черное окно дебага для сырых байт (забирает всё свободное место) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="?android:attr/colorBackground"
-        android:padding="8dp">
+        android:background="#1E1E1E"
+        android:padding="6dp">
 
         <TextView
-            android:id="@+id/txtConsole"
+            android:id="@+id/txtDebugLogConsole"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Нажмите Test Connect для инициализации K-Line кабеля..."
-            android:background="?android:attr/colorBackground"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
-            android:fontFamily="monospace" />
+            android:fontFamily="monospace"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:text="" />
     </ScrollView>
 
     <!-- 🛠️ ВСПЛЫВАЮЩАЯ КНОПКА СБРОСА ОШИБОК (Изначально скрыта!) -->

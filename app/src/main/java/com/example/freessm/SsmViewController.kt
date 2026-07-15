@@ -9,32 +9,51 @@ import android.widget.TextView
 
 class SsmViewController(
     private val context: Context,
+    private val btnTestConnect: Button,
     private val btnCodes: Button,
     private val btnData: Button,
     private val btnGlobalLogs: Button,
     private val btnClear: Button,
     private val layoutLegendContainer: LinearLayout,
-    private val ssmGraphView: SsmGraphView
+    private val ssmGraphView: SsmGraphView,
+    private val connectManager: SsmConnectManager
 ) {
     fun highlightActiveMenuButton(activeButton: android.widget.Button) {
-        // 1. Собираем все кнопки левой панели в один список для массовой обработки
-        val allButtons = listOf(btnCodes, btnData, btnGlobalLogs)
+        val isConnected = connectManager.activeChannel != null
+        val allButtons = listOf(btnTestConnect, btnCodes, btnData, btnGlobalLogs)
 
         for (btn in allButtons) {
             if (btn == activeButton) {
                 // 🟢 ДЛЯ АКТИВНОЙ КНОПКИ:
-                // Красим её в твой фирменный цвет (например, глубокий синий)
-                btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#0F377E")))
-
-                // Фишка: силой заставляем текст становиться ярко-белым (или контрастным теме)
-                btn.setTextColor(android.graphics.Color.WHITE)
+                if (btn.id == R.id.btnTestConnect) {
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                } else {
+                    btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#0F377E")))
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
             } else {
                 // ⚪ ДЛЯ ВСЕХ ОСТАЛЬНЫХ (НЕАКТИВНЫХ) КНОПОК:
-                // Возвращаем стандартный серый/синий цвет фона из твоей разметки
-                btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
+                if (btn.id == R.id.btnTestConnect) {
+                    // 🟢 ИСПРАВЛЕНО: Убрали обращение к pollingEngine.
+                    // Если связь с машиной есть — держим кнопку зелёной, иначе — возвращаем дефолтный голубой.
+                    if (isConnected) {
+                        btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#4CAF50")))
+                    } else {
+                        btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
+                    }
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                    continue
+                }
 
-                // Текст неактивных кнопок пусть всегда берет основной адаптивный цвет системы!
-                btn.setTextColor(activeButton.context.getColor(android.R.color.white))
+                if (btn.id == R.id.btnCodes || btn.id == R.id.btnData) {
+                    if (!isConnected) {
+                        btn.isEnabled = false
+                        continue
+                    }
+                }
+
+                btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
+                btn.setTextColor(android.graphics.Color.WHITE)
             }
         }
     }

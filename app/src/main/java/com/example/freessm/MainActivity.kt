@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txtGlobalLogConsole: TextView
     private lateinit var btnClearSystemLog: Button
     private lateinit var layoutClearContainer: LinearLayout
-    private lateinit var lblEcuHeader: TextView
+//    private lateinit var lblEcuHeader: View
     private lateinit var btnTestConnect: Button
     private lateinit var btnCodes: Button
     private lateinit var btnData: Button
@@ -56,15 +56,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sensorAdapter: SensorAdapter
 
     private val sensorList = SsmEcuMap.fullSensorList
+    private lateinit var themeHelper: SsmThemeHelper
 
-    @SuppressLint("SetTextI18n")
+
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkTimeAndSetTheme()
+
+        themeHelper = SsmThemeHelper(this)
+        themeHelper.checkTimeAndSetTheme()
 
         setContentView(R.layout.activity_main)
 
-        lblEcuHeader = findViewById(R.id.lblEcuHeader)
+//        lblEcuHeader = findViewById(R.id.lblEcuHeader)
 
         hardwareManager = SsmHardwareManager()
 
@@ -101,20 +105,12 @@ class MainActivity : AppCompatActivity() {
         val btnExit = findViewById<Button>(R.id.btnExit)
         val btnDebugMode = findViewById<ToggleButton>(R.id.btnDebugMode)
 
+        connectManager = SsmConnectManager(context = this, hardwareManager = hardwareManager)
         // Инициализируем хелпер графики
-        viewController = SsmViewController(this, btnCodes, btnData, btnGlobalLogs, btnClear, layoutLegendContainer, ssmGraphView)
+        viewController = SsmViewController(this, btnTestConnect, btnCodes, btnData, btnGlobalLogs, btnClear, layoutLegendContainer, ssmGraphView, connectManager)
 
-        connectManager = SsmConnectManager(
-            context = this,
-            hardwareManager = hardwareManager,
-            btnTestConnect = btnTestConnect,
-            btnCodes = btnCodes,
-            btnData = btnData,
-            lblRomId = lblRomId,
-            lblEngineType = lblEngineType,
-            lblMeasuringBlocksHeader = lblMeasuringBlocksHeader,
-            lblEcuHeader = lblEcuHeader
-        )
+        // Поиск нижнего черного текстового поля для вывода сырых байт дебага
+        val txtDebugLogConsole = findViewById<TextView>(R.id.txtDebugLogConsole)
 
         faultCodesManager = FaultCodesManager(
             hardwareManager, txtConsole, lblConsoleHeader, layoutClearContainer
@@ -122,31 +118,34 @@ class MainActivity : AppCompatActivity() {
 
         // Инициализируем фоновый движок через лямбда-коллбеки
         pollingEngine = SsmPollingEngine(
-            hardwareManager, packetHandler, sensorList,
+            packetHandler = packetHandler, // Твой оригинальный SsmPacketHandler
+            sensorList = sensorList,       // Твой список SensorItem
             onTick = {
-//                if (findViewById<View>(R.id.rvCompact).visibility == View.VISIBLE) {
-//                    compactAdapter = SsmCompactAdapter(sensorList.filter { it.isSelected })
-//                    findViewById<RecyclerView>(R.id.rvCompact).adapter = compactAdapter
-//                }
-                if (currentViewMode == 1) { // 1 - это наш режим Compact
+                // Логика переключения компактного режима во время опроса
+                if (findViewById<View>(R.id.rvCompact).visibility == View.VISIBLE) {
+                    compactAdapter = SsmCompactAdapter(sensorList.filter { it.isSelected })
+                    findViewById<RecyclerView>(R.id.rvCompact).adapter = compactAdapter
+                }
+
+                if (currentViewMode == 1) { // Режим Compact
                     compactAdapter.notifyDataSetChanged()
                 }
 
                 sensorAdapter.notifyDataSetChanged()
 
-                viewController.updateGraphLegend(sensorList, currentViewMode == 2, pollingEngine.isDebugEnabled)
-                // Передаем точки на график
+                // Обновляем легенду графиков
+                viewController.updateGraphLegend(sensorList, isGraphViewMode = currentViewMode == 2, pollingEngine.isDebugEnabled)
+
+                // Передаем живые точки на экран кастомного графика-осциллографа
                 sensorList.filter { it.isSelected }.forEach { sensor ->
                     sensor.currentValue.toDoubleOrNull()?.let { ssmGraphView.addDataPoint(sensor.title, it) }
                 }
 
-                val btnDebugModeLocal = findViewById<ToggleButton>(R.id.btnDebugMode)
-                layoutDebugContainer.visibility = if (btnDebugModeLocal.isChecked) View.VISIBLE else View.GONE
-
             },
-            onDebugLog = { logText, shouldClear ->
-                if (shouldClear) txtDebugLog.text = ""
-                txtDebugLog.append(logText)
+            onDebugLog = { logText, shouldClean ->
+                // Логика вывода бегущих байт параметров в нижнее черное окно во время Start опроса
+                if (shouldClean) txtDebugLogConsole.text = ""
+                txtDebugLogConsole.append(logText)
             }
         )
 
@@ -179,52 +178,65 @@ class MainActivity : AppCompatActivity() {
 
         btnDebugMode.setOnCheckedChangeListener { _, isChecked ->
             pollingEngine.isDebugEnabled = isChecked
-//            layoutDebugContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+            layoutDebugContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
+
         btnTestConnect.setOnClickListener {
-            // 1. Принудительно возвращаем правую панель на Слайд 0 (консоль)
+            window.decorView.findViewById<android.view.View>(R.id.btnClear)?.let { btn ->
+                btn.visibility = android.view.View.GONE
+            }
             viewFlipper.displayedChild = 0
 
-            // Менеджер сам знает, эмулятор это или боевой шнурок, и вернет true/false.
-            val isSuccess = connectManager.connectToEcu()
+            val channel = connectManager.initializeChannel()
+            val isConnectSuccess = channel.open()
 
-            if (isSuccess) {
-                // 🚙 УСПЕХ: Мгновенно собираем данные и пишем рапорт в терминал БЕЗ всяких всплывающих окон!
-                val chipName = hardwareManager.usbPort?.driver?.device?.productName ?: "Virtual Emulator"
-                val realRomId = lblRomId.text.toString().replace("ROM-ID:  ", "")
-                val realEngine = lblEngineType.text.toString().replace("Engine Type:  ", "")
+            // Выводим отладочный лог K-Line в консоль терминала на Слайде 0
+            txtDebugLogConsole.text = channel.debugLog
 
-                lblConsoleHeader.text = "Connection Test Status:"
-                layoutClearContainer.visibility = View.GONE
-                txtConsole.text = """
-                    [SYSTEM LOG]: Инициализация интерфейса... SUCCESS
-                    --------------------------------------------------
-                    USB Chipset      : $chipName
-                    Bus Protocol     : Subaru Select Monitor 2 (SSM2)
-                    Baud Rate        : 4800 baud (Fixed K-Line)
-                    Detected ECU     : $realEngine
-                    ECU ROM-ID       : $realRomId
-                    
-                    Система полностью готова к чтению параметров.
-                    Выберите интересующий режим в левой панели управления.
-                """.trimIndent()
+            if (isConnectSuccess) {
+                pollingEngine.currentChannel = channel
+                lblRomId.text = "ROM-ID:  ${channel.getRomId()}"
+                lblEngineType.text = if (channel.chipset == "Virtual Emulator") "Engine Type: JDM Forester SF5 (EJ202)" else "Engine Type: Subaru Forester SF5"
+                lblMeasuringBlocksHeader.text = "Measuring Blocks:\n  Data: 18  Switches: 22"
+
+                val greenColor = android.graphics.Color.parseColor("#4CAF50")
+
+                // Кнопка CONNECT триумфально загорается ЗЕЛЕНЫМ цветом
+                btnTestConnect.backgroundTintList = android.content.res.ColorStateList.valueOf(greenColor)
+                btnTestConnect.setTextColor(android.graphics.Color.WHITE)
+
+                val blueColor = android.graphics.Color.parseColor("#2196F3")
+                val blueStateList = android.content.res.ColorStateList.valueOf(blueColor)
+
+                // Разблокируем кнопки разделов диагностики и возвращаем им дефолтный голубой цвет
+                btnCodes.backgroundTintList = blueStateList
+                btnData.backgroundTintList = blueStateList
+                btnGlobalLogs.backgroundTintList = blueStateList
+
+                btnCodes.isEnabled = true
+                btnData.isEnabled = true
+
+                txtConsole.text = channel.connectReport
+
             } else {
-                lblConsoleHeader.text = "Connection Test Status: FAILED"
-                layoutClearContainer.visibility = View.GONE
-                txtConsole.text = """
-                    [ERROR]: Нет ответа от блока управления двигателем!
-                    --------------------------------------------------
-                    Возможные причины неисправности:
-                    1. Зажигание машины выключено (переведите ключ в положение ON).
-                    2. Фоновое приложение магнитолы (например, TPMS) заблокировало USB-порт.
-                    3. Плохой контакт в диагностическом разъеме OBD2.
-                    
-                    Проверьте кабель и повторите попытку подключения.
-                """.trimIndent()
+                pollingEngine.currentChannel = null
+                val redColor = android.graphics.Color.parseColor("#E53935")
+
+                // При ошибке кнопка CONNECT железно загорается КРАСНЫМ цветом
+                btnTestConnect.backgroundTintList = android.content.res.ColorStateList.valueOf(redColor)
+                btnTestConnect.setTextColor(android.graphics.Color.WHITE)
+
+                btnCodes.isEnabled = false
+                btnData.isEnabled = false
+                lblRomId.text = "ROM-ID:  FAILED"
+                lblEngineType.text = "Engine Type: No Response"
+                txtConsole.text = channel.connectReport
             }
         }
 
         btnCodes.setOnClickListener {
+            if (connectManager.activeChannel == null) return@setOnClickListener
+
             lblConsoleHeader.text = "Diagnostic Trouble Codes:"
             txtConsole.text = "Подключение к ЭБУ... Чтение кодов неисправностей..."
             if (pollingEngine.isPollingData) {
@@ -234,14 +246,17 @@ class MainActivity : AppCompatActivity() {
                 sensorAdapter.notifyDataSetChanged()
             }
             viewFlipper.displayedChild = 0
-            if (connectManager.connectToEcu()) faultCodesManager.readSubaruFaultCodes()
+            if (connectManager.activeChannel != null) faultCodesManager.readSubaruFaultCodes()
+
             viewController.highlightActiveMenuButton(btnCodes)
+            window.decorView.findViewById<android.view.View>(R.id.btnClear)?.visibility = android.view.View.VISIBLE
         }
 
         btnData.setOnClickListener {
+            // 🟢 ИСПРАВЛЕНО: Если связи с ЭБУ нет — блокируем вход в параметры мотора
+            if (connectManager.activeChannel == null) return@setOnClickListener
             viewFlipper.displayedChild = 1
             sensorAdapter.notifyDataSetChanged()
-            connectManager.connectToEcu()
             viewController.highlightActiveMenuButton(btnData)
         }
 
@@ -272,7 +287,7 @@ class MainActivity : AppCompatActivity() {
                     sensorAdapter.notifyDataSetChanged()
                 }
                 viewFlipper.displayedChild = 0
-                if (connectManager.connectToEcu()) faultCodesManager.clearEcuMemory()
+                if (connectManager.activeChannel != null) faultCodesManager.clearEcuMemory()
                 viewController.highlightActiveMenuButton(btnCodes) // Возвращаем фокус на экран терминала отчетов
             }
             builder.setNegativeButton("Отмена") { dialog, _ -> dialog.dismiss() }
@@ -356,54 +371,6 @@ class MainActivity : AppCompatActivity() {
         pollingEngine.stopLoop()
         SsmFileLogger.closeSession()
         try { hardwareManager.usbPort?.close() } catch (e: Exception) {}
-    }
-
-    private fun checkTimeAndSetTheme() {
-        val calendar = java.util.Calendar.getInstance()
-
-        // Получаем текущий месяц (в Андроиде они считаются от 0 до 11: 0 - Январь, 11 - Декабрь)
-        val month = calendar.get(java.util.Calendar.MONTH)
-
-        // Получаем текущее время на часах в минутах от начала суток (чтобы легко сравнивать)
-        val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
-        val currentMinute = calendar.get(java.util.Calendar.MINUTE)
-        val currentMinutesFromMidnight = (currentHour * 60) + currentMinute
-
-        // 📊 Массив статистики: Время ВОСХОДА для каждого месяца (в минутах от 00:00)
-        // Янв (08:30), Фев (07:40), Мар (06:40), Апр (05:20), Май (04:10), Июн (03:40)
-        // Июл (04:10), Авг (05:00), Сен (06:00), Окт (07:00), Ноя (08:00), Дек (08:40)
-        val sunriseSchedule = intArrayOf(
-            510, 460, 400, 320, 250, 220,
-            250, 300, 360, 420, 480, 520
-        )
-
-        // 📊 Массив статистики: Время ЗАКАТА для каждого месяца (в минутах от 00:00)
-        // Янв (16:30), Фев (17:30), Мар (18:30), Апр (19:40), Май (20:40), Июн (21:20)
-        // Июл (21:00), Авг (20:00), Сен (18:40), Окт (17:20), Ноя (16:20), Дек (16:00)
-        val sunsetSchedule = intArrayOf(
-            990,  1050, 1110, 1180, 1240, 1280,
-            1260, 1200, 1120, 1040, 980,  960
-        )
-
-        // Достаем из нашей базы точные минуты для текущего месяца
-        val todaySunrise = sunriseSchedule[month]
-        val todaySunset = sunsetSchedule[month]
-
-        // 🌙 Ночь наступает, если мы проснулись ДО рассвета ИЛИ за рулем уже ПОСЛЕ заката
-        val isNight = currentMinutesFromMidnight < todaySunrise || currentMinutesFromMidnight >= todaySunset
-
-        val targetMode = if (isNight) {
-            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES // Включаем ночь
-        } else {
-            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO  // Включаем день
-        }
-
-        val currentAndroidMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
-        val isCurrentAndroidNight = currentAndroidMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
-
-        if (isNight != isCurrentAndroidNight) {
-            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(targetMode)
-        }
     }
 
 }

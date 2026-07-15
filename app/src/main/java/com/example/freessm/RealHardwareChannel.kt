@@ -162,4 +162,36 @@ class RealHardwareChannel(
         Диагностический канал открыт. Система готова к работе.
     """.trimIndent()
 
+    override fun readBlock(address: ByteArray, length: Int): ByteArray {
+        // Заголовок команды SSM2 Read Block (0x80) + Длина полей (4 байта на команду/длину/адрес) + Байт запрашиваемой длины + Чексумма
+        val requestPacket = ByteArray(4 + address.size + 1 + 1)
+
+        requestPacket[0] = 0x80.toByte() // Команда Read Block
+        requestPacket[1] = (address.size + 2).toByte() // Размер полей
+        requestPacket[2] = 0x00.toByte() // Заглушка
+
+        // Копируем 3-байтовый адрес ЭБУ в пакет
+        System.arraycopy(address, 0, requestPacket, 3, address.size)
+
+        // Записываем, сколько байт данных мы хотим прочитать из этой ячейки памяти
+        requestPacket[3 + address.size] = length.toByte()
+
+        // Считаем контрольную сумму (метод автоматически наследуется из интерфейса SsmChannel)
+        var sum = 0
+        for (i in 0 until requestPacket.size - 1) {
+            sum += (requestPacket[i].toInt() and 0xFF)
+        }
+        requestPacket[requestPacket.size - 1] = (sum and 0xFF).toByte()
+
+        // 🚙 ТУТ ОТПРАВКА В ПОРТ: Шлём байты в чип FTDI/CH340 вашей магнитолы UIS8581A
+        // writeToSerialPort(requestPacket)
+
+        // 🚙 ТУТ ЧТЕНИЕ ОТВЕТА: Забираем массив байт из буфера K-линии
+        // val response = readFromSerialPort()
+
+        // Временная заглушка, пока не настроены низкоуровневые стримы ввода-вывода в порт:
+        val mockResponse = ByteArray(length)
+        return mockResponse
+    }
+
 }

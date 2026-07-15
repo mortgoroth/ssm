@@ -29,7 +29,7 @@ class SsmConnectManager(
                 usbManager.requestPermission(device, permissionIntent)
 
                 // Временный пустой канал, пока водитель не нажмет ОК в окне Андроида
-                val stub = EmulatorChannel()
+                val stub = EmulatorChannel(context)
                 activeChannel = stub
                 return stub
             }
@@ -51,7 +51,7 @@ class SsmConnectManager(
         }
 
         // 🤖 Шнурка физически нет! Незаметно подсовываем приложению плеер логов
-        val emulatorChannel = EmulatorChannel()
+        val emulatorChannel = EmulatorChannel(context)
         activeChannel = emulatorChannel
         return emulatorChannel
     }

@@ -195,7 +195,9 @@ class MainActivity : AppCompatActivity() {
 
             if (isConnectSuccess) {
                 pollingEngine.currentChannel = channel
-                lblRomId.text = "ROM-ID:  ${channel.getRomId()}"
+                val realRomId = channel.requestRomId()
+                lblRomId.text = "ROM-ID:  $realRomId"
+
                 lblEngineType.text = if (channel.chipset == "Virtual Emulator") "Engine Type: JDM Forester SF5 (EJ202)" else "Engine Type: Subaru Forester SF5"
                 lblMeasuringBlocksHeader.text = "Measuring Blocks:\n  Data: 18  Switches: 22"
 

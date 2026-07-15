@@ -1,11 +1,24 @@
 package com.example.freessm
 
-class EmulatorChannel : SsmChannel {
-    override val chipset: String = "Virtual Emulator"
-    override val debugLog: String = "Запущен настольный универсальный эмулятор.\nФизический кабель KKL не обнаружен.\n"
-    private var loopCounter = 0
+import android.content.Context
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-    override fun open(): Boolean = true
+class EmulatorChannel (private val context: Context) : SsmChannel {
+    override val chipset: String = "Virtual Emulator"
+    override var debugLog: String = ""
+    override var connectReport: String = ""
+
+    override fun open(): Boolean {
+        debugLog += "Virtual Emulator Opened\n"
+        return true
+    }
+
+    fun close() {
+        debugLog += "Virtual Emulator Closed\n"
+    }
+
+    private var loopCounter = 0
 
     override fun sendAndReceive(requestPacket: ByteArray, expectedResponseSize: Int): Pair<ByteArray, Int> {
         // Эмулируем задержку шины автомобиля, чтобы софт не улетал в космос
@@ -35,15 +48,38 @@ class EmulatorChannel : SsmChannel {
 
     override fun getRomId(): String = "1C 08 00 01 00" // Родной паспорт твоего EJ202
 
-    override val connectReport: String = """
-        [SYSTEM LOG]: Инициализация интерфейса К-линии... SUCCESS
-        --------------------------------------------------
-        Режим работы     : АВТОМАТИЧЕСКИЙ ЭМУЛЯТОР (Demo)
-        Интерфейс        : Virtual Emulator
-        Протокол обмена  : Subaru Select Monitor 2 (SSM2)
-        Скорость шины    : 4800 / 9600 baud (Fast Init OK)
-        Вычитанный ROM-ID: 1C 08 00 01 00
-        
-        Диагностический канал открыт. Система готова к работе.
-    """.trimIndent()
+    override fun readBlock(address: ByteArray, length: Int): ByteArray {
+        // Переводим запрашиваемый адрес в HEX строку (например: "000004")
+        val addressHex = address.joinToString("") { String.format("%02X", it) }
+
+        try {
+            // 🟢 Открываем поток чтения файла из папки assets
+            val inputStream = context.assets.open("ecu_polling_dump.txt")
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            var line: String?
+
+            // Читаем файл построчно в поисках нужного адреса обмена
+            while (reader.readLine().also { line = it } != null) {
+                val currentLine = line ?: continue
+
+                // Ищем строку, в которой фигурирует наш запрашиваемый адрес памяти
+                if (currentLine.contains(addressHex, ignoreCase = true)) {
+                    // Твой дамп — это текстовый лог. Если находим строку ответа ЭБУ,
+                    // парсим её обратно в массив байт нужной длины
+                    // (Для примера с ROM-ID возвращаем эталонные 5 байт из дампа)
+                    if (addressHex == "000004") {
+                        reader.close()
+                        return byteArrayOf(0x1C.toByte(), 0x08.toByte(), 0x00.toByte(), 0x01.toByte(), 0x00.toByte())
+                    }
+                }
+            }
+            reader.close()
+        } catch (e: Exception) {
+            debugLog += "Emulator Error reading dump: ${e.message}\n"
+        }
+
+        // Если адрес в дампе не найден, возвращаем пустой массив заданной длины
+        return ByteArray(length)
+    }
+
 }

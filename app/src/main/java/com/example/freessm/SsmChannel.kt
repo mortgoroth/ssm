@@ -13,4 +13,20 @@ interface SsmChannel {
     val debugLog: String
     val connectReport: String
 
+    fun readBlock(address: ByteArray, length: Int): ByteArray
+
+    fun requestRomId(): String {
+        // Стартовый адрес ПЗУ для чтения ROM-ID на Subaru: 0x000004
+        val romAddress = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x04.toByte())
+
+        // Читаем блок длиной 5 байт
+        val response = readBlock(romAddress, 5)
+
+        // Если ЭБУ вернул ровно 5 байт данных, переводим их в красивую HEX-строку
+        if (response.size == 5) {
+            return response.joinToString(" ") { String.format("%02X", it) }
+        }
+
+        return "FAILED"
+    }
 }
